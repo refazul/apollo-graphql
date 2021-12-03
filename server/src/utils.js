@@ -1,69 +1,77 @@
-const SQL = require('sequelize');
+const mongoose = require('mongoose');
 
 module.exports.paginateResults = ({
-  after: cursor,
-  pageSize = 20,
-  results,
-  // can pass in a function to calculate an item's cursor
-  getCursor = () => null,
+    after: cursor,
+    pageSize = 20,
+    results,
+    // can pass in a function to calculate an item's cursor
+    getCursor = () => null,
 }) => {
-  if (pageSize < 1) return [];
+    if (pageSize < 1) return [];
 
-  if (!cursor) return results.slice(0, pageSize);
-  const cursorIndex = results.findIndex(item => {
-    // if an item has a `cursor` on it, use that, otherwise try to generate one
-    let itemCursor = item.cursor ? item.cursor : getCursor(item);
+    if (!cursor) return results.slice(0, pageSize);
+    const cursorIndex = results.findIndex(item => {
+        // if an item has a `cursor` on it, use that, otherwise try to generate one
+        let itemCursor = item.cursor ? item.cursor : getCursor(item);
 
-    // if there's still not a cursor, return false by default
-    return itemCursor ? cursor === itemCursor : false;
-  });
+        // if there's still not a cursor, return false by default
+        return itemCursor ? cursor === itemCursor : false;
+    });
 
-  return cursorIndex >= 0
-    ? cursorIndex === results.length - 1 // don't let us overflow
-      ? []
-      : results.slice(
-          cursorIndex + 1,
-          Math.min(results.length, cursorIndex + 1 + pageSize),
-        )
-    : results.slice(0, pageSize);
+    return cursorIndex >= 0
+        ? cursorIndex === results.length - 1 // don't let us overflow
+            ? []
+            : results.slice(
+                cursorIndex + 1,
+                Math.min(results.length, cursorIndex + 1 + pageSize),
+            )
+        : results.slice(0, pageSize);
 };
 
 module.exports.createStore = () => {
-  const Op = SQL.Op;
-  const operatorsAliases = {
-    $in: Op.in,
-  };
+    mongoose.Promise = global.Promise;
+    mongoose.connect('mongodb://' + process.env.db_user_mongodb + ':' + process.env.db_pass_mongodb + '@' + process.env.db_host + ':' + process.env.db_port_mongodb + '/' + process.env.db_name_mongodb + '?authSource=admin&readPreference=primary&directConnection=true&ssl=false', {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    });
 
-  const db = new SQL('database', 'username', 'password', {
-    dialect: 'sqlite',
-    storage: './store.sqlite',
-    operatorsAliases,
-    logging: false,
-  });
+    UserSchema = mongoose.model('User', {
+        email: String,
+        token: String
+    });
+    TripSchema = mongoose.model('Trip', {
+        launchId: Number,
+        userId: String
+    })
 
-  const users = db.define('user', {
-    id: {
-      type: SQL.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    createdAt: SQL.DATE,
-    updatedAt: SQL.DATE,
-    email: SQL.STRING,
-    token: SQL.STRING,
-  });
+    const User = {
+        findOrCreate: async ({ email }) => {
+            var user = await UserSchema.findOne({ email }).exec();
+            if (!user) {
+                var newUser = new UserSchema({ email });
+                user = await newUser.save();
+            }
+            return [user];
+        },
+    }
+    const Trip = {
+        findOrCreate: async ({ userId, launchId }) => {
+            var trip = await TripSchema.findOne({ userId, launchId }).exec();
+            if (!trip) {
+                var newTrip = new TripSchema({ userId, launchId });
+                trip = await newTrip.save();
+            }
+            return [trip];
+        },
+        findAll: async({ userId }) => {
+            var res = await TripSchema.find({ userId }).exec();
+            return res;
+        },
+        destroy: async ({ userId, launchId }) => {
+            var res = await TripSchema.remove({ userId, launchId }).exec();
+            return res.deletedCount > 0;
+        }
+    }
 
-  const trips = db.define('trip', {
-    id: {
-      type: SQL.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    createdAt: SQL.DATE,
-    updatedAt: SQL.DATE,
-    launchId: SQL.INTEGER,
-    userId: SQL.INTEGER,
-  });
-
-  return { users, trips };
-};
+    return { User, Trip }
+}
