@@ -33,9 +33,17 @@ const typeDefs = gql`
   }
 
   type Query {
-    launches: [Launch]!
+    launches(
+      pageSize: Int
+      after: String
+    ): LaunchConnection!
     launch(id: ID!): Launch
     me: User
+  }
+  type LaunchConnection {
+    cursor: String!
+    hasMore: Boolean!
+    launches: [Launch]!
   }
   type Mutation {
     bookTrips(launchIds: [ID]!): TripUpdateResponse!
