@@ -66,7 +66,7 @@ module.exports = {
             });
 
             return {
-                success: results && results.length === launchIds.length,
+                success: results && results.length === launchIds.length ? "yes" : "no",
                 message:
                     results.length === launchIds.length
                         ? 'trips booked successfully'

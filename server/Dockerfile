@@ -1,10 +1,10 @@
 FROM node:17
 WORKDIR /app/server
-COPY server/package.json /app/server/package.json
+COPY package.json /app/server/package.json
 RUN npm install
 
-COPY server/src/* /app/server/src/
-COPY server/src/datasources* /app/server/src/datasources/
+COPY src/* /app/server/src/
+COPY src/datasources* /app/server/src/datasources/
 EXPOSE 4000
 CMD [ "node", "src/index.js" ]
 
