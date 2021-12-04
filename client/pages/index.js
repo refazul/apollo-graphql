@@ -1,17 +1,23 @@
+import Head from "next/head";
 import { gql } from "@apollo/client";
 import client from "../apollo-client";
 
 export default function Home({ launches }) {
     return (
         <div className="">
-            {launches.map((launch) => (
-                <div key={launch.id} className="">
-                    <h3><a href="#" ></a>{launch.site}</h3>
-                    <p>
-                        {launch.mission.name}
-                    </p>
-                </div>
-            ))}
+            <Head>
+                <title>Static Props</title>
+            </Head>
+            <main className="">
+                {launches.map((launch) => (
+                    <div key={launch.id} className="">
+                        <h3><a href="#" ></a>{launch.site}</h3>
+                        <p>
+                            {launch.mission.name}
+                        </p>
+                    </div>
+                ))}
+            </main>
         </div>
     )
 }
