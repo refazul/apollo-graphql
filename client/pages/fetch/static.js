@@ -1,12 +1,12 @@
 import Head from "next/head";
 import { gql } from "@apollo/client";
-import client from "../apollo-client";
+import client from "../../apollo-client";
 
 export default function Home({ launches }) {
     return (
         <div className="">
             <Head>
-                <title>Static Props</title>
+                <title>Static</title>
             </Head>
             <main className="">
                 {launches.map((launch) => (
