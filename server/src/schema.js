@@ -51,7 +51,7 @@ const typeDefs = gql`
     login(email: String): User
   }  
   type TripUpdateResponse {
-    success: Boolean!
+    success: String
     message: String
     launches: [Launch]
   }

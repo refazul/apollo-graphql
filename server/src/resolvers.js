@@ -81,13 +81,13 @@ module.exports = {
 
             if (!result)
                 return {
-                    success: false,
+                    success: "no",
                     message: 'failed to cancel trip',
                 };
 
             const launch = await dataSources.launchAPI.getLaunchById({ launchId });
             return {
-                success: true,
+                success: "yes",
                 message: 'trip cancelled',
                 launches: [launch],
             };
