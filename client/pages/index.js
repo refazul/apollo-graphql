@@ -1,47 +1,20 @@
-import Head from "next/head";
-import { gql } from "@apollo/client";
-import client from "../apollo-client";
+import Head from 'next/head'
+import Layout, { siteTitle } from '../components/layout'
+import utilStyles from '../styles/utils.module.css'
 
-export default function Home({ launches }) {
+export default function Home() {
     return (
-        <div className="">
+        <Layout home>
             <Head>
-                <title>Static Props</title>
+                <title>{siteTitle}</title>
             </Head>
-            <main className="">
-                {launches.map((launch) => (
-                    <div key={launch.id} className="">
-                        <h3><a href="#" ></a>{launch.site}</h3>
-                        <p>
-                            {launch.mission.name}
-                        </p>
-                    </div>
-                ))}
-            </main>
-        </div>
+            <section className={utilStyles.headingMd}>
+                <p>[Your Self Introduction]</p>
+                <p>
+                    (This is a sample website - you’ll be building a site like this on{' '}
+                    <a href="https://nextjs.org/learn">our Next.js tutorial</a>.)
+                </p>
+            </section>
+        </Layout>
     )
-}
-
-export async function getStaticProps() {
-    const { data } = await client.query({
-        query: gql`
-            query Lauchces {
-                launches {
-                    launches {
-                        id
-                        site
-                        mission {
-                            name
-                        }
-                    }
-                }
-            }
-        `,
-    });
-
-    return {
-        props: {
-            launches: data.launches.launches.slice(0, 4),
-        },
-    };
 }

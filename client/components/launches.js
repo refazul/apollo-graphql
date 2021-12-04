@@ -1,5 +1,6 @@
 import { useQuery, gql } from "@apollo/client";
 
+// https://www.apollographql.com/blog/apollo-client/next-js/next-js-getting-started/
 const QUERY = gql`
 query Lauchces {
     launches {
