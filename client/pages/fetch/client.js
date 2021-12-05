@@ -14,9 +14,7 @@ export default function ClientSide() {
                 <h1>
                     Welcome to <a href="https://nextjs.org">Next.js!</a>
                 </h1>
-                <ClientOnly>
-                    <Launches />
-                </ClientOnly>
+                <Launches />
             </main>
         </div>
     );
